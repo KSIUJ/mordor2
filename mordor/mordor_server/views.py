@@ -1,10 +1,10 @@
 import os
 import markdown
 
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, Http404, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
-from django.http.response import Http404
+from django.shortcuts import redirect, render
+from django.template import loader
 
 from shutil import make_archive
 
@@ -60,10 +60,14 @@ def view_file(request, path):
     else:
         return FileResponse(open(request_path, 'rb'))
 
+def handler404(request, exception):
+    content = loader.render_to_string('mordor_server/home.html', {}, request)
+    return HttpResponseNotFound(content)
+
 def get_path(path):
     request_path = DATA_LOCATION + '/' + str(path)
 
     if not os.path.exists(request_path):
-        raise Http404("Path not found")
-    
+        raise Http404()
+
     return request_path
