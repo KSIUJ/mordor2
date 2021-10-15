@@ -60,7 +60,15 @@ def view_file(request, path):
     else:
         return FileResponse(open(request_path, 'rb'))
 
+def handler403(request, exception):
+    content = loader.render_to_string('mordor_server/home.html', {}, request)
+    return HttpResponseNotFound(content)
+
 def handler404(request, exception):
+    content = loader.render_to_string('mordor_server/home.html', {}, request)
+    return HttpResponseNotFound(content)
+
+def handler405(request, exception):
     content = loader.render_to_string('mordor_server/home.html', {}, request)
     return HttpResponseNotFound(content)
 
