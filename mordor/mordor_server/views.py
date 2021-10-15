@@ -4,39 +4,38 @@ import markdown
 from django.http import HttpResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from django.http.response import Http404
+
 from shutil import make_archive
-from django.shortcuts import render
+
 
 DATA_LOCATION = r'/home/bubuss/mordor2.0/data'
 
-
 # Create your views here.
 def list_directory(request, path=''):
-    request_path = os.path.join(DATA_LOCATION, path)
+    request_path = get_path(path)
     data_in_directory = os.listdir(request_path)
-
-    return render(request, 'mordor_server/file_list.html', {
-        'files': data_in_directory
-    })
-    # return HttpResponse(' '.join(data_in_directory))
+    
+    return HttpResponse(' '.join(data_in_directory))
 
 
 def download_directory(request, path):
-    request_path = os.path.join(DATA_LOCATION, path)
-
+    request_path = get_path(path)
     make_archive(r'/home/bubuss/mordor2.0/temp/x', 'zip', request_path)
+    
     return FileResponse(open(r'/home/bubuss/mordor2.0/temp/x.zip', 'rb'),
                         as_attachment=True)
 
 
 def download_file(request, path):
-    request_path = os.path.join(DATA_LOCATION, path)
-
+    request_path = get_path(path)
+    
     return FileResponse(open(request_path, 'rb'), as_attachment=True)
 
+
 @csrf_exempt
-def add_file(request, path):
-    request_path = os.path.join(DATA_LOCATION, path)
+def add_file(request, path):  
+    request_path = get_path(path)
 
     if request.method == 'POST':
         file = request.FILES['file'].open()
@@ -50,18 +49,21 @@ def add_file(request, path):
         return HttpResponse("Wrong request method!")
 
 
-def homepage(request):
-    return render(request, 'mordor_server/home.html')
-
-
 def view_file(request, path):
-    request_path = DATA_LOCATION + '/' + str(path)
+    request_path = get_path(path)
     file_type = path[path.rindex('.')+1:]
 
     if file_type.lower() == "md":
         file = open(request_path, 'r')
-        html = markdown.markdown(file.read(), extensions=['fenced_code'])
+        html = markdown.markdown(file.read(), extensions=['extra'])
         return render(request, 'mordor_server/index.html', {'markdown': html})
     else:
         return FileResponse(open(request_path, 'rb'))
 
+def get_path(path):
+    request_path = DATA_LOCATION + '/' + str(path)
+
+    if not os.path.exists(request_path):
+        raise Http404("Path not found")
+    
+    return request_path
