@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mordor</title>
+</head>
+<body>
+<div>
+    {% load static %}
+    <div class="text-center embed-responsive embed-responsive-21by9 mb-3">
+        <img src="{% static 'mordor_server/flag_of_mordor.svg' %}"/>
+    </div>
+
+    <h1 class="text-center">Mordor</h1>
+
+    <blockquote class="blockquote">
+        <p class="mb-0">...One does not simply walk into Mordor...</p>
+    </blockquote>
+
+    <p>Login required</p>
+
+    <div class="text-center">
+        <a href="/list/" class="btn btn-success" role="button">Login</a>
+    </div>
+
+</div>
+</body>
+</html>

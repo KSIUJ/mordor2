@@ -1,6 +1,7 @@
 import os
 from django.http import HttpResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
 from shutil import make_archive
 
 DATA_LOCATION = r'/home/skyman/projects/mordor2/data'
@@ -11,7 +12,10 @@ def list_directory(request, path=''):
     request_path = os.path.join(DATA_LOCATION, path)
     data_in_directory = os.listdir(request_path)
 
-    return HttpResponse(' '.join(data_in_directory))
+    return render(request, 'mordor_server/file_list.html', {
+        'files': data_in_directory
+    })
+    # return HttpResponse(' '.join(data_in_directory))
 
 
 def download_directory(request, path):
@@ -41,3 +45,7 @@ def add_file(request, path):
         return HttpResponse("Done")
     else:
         return HttpResponse("Wrong request method!")
+
+
+def homepage(request):
+    return render(request, 'mordor_server/home.html')

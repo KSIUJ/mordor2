@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.w3.org/1999/xhtml">
+<head>
+    {% load static %}
+    <meta charset="utf-8">
+    <title>Mordor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script defer src="https://use.fontawesome.com/releases/v5.5.0/js/all.js"
+            integrity="sha384-GqVMZRt5Gn7tB9D9q7ONtcp4gtHIUEW/yG7h98J7IpE3kpi+srfFyyB/04OV6pG0"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'mordor_server/style.css' }}">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'mordor_server/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'mordor_server/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'mordor_server/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'mordor_server/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'mordor_server/safari-pinned-tab.svg' %}" color="#ff0000">
+    <link rel="shortcut icon" href="{% static 'mordor_server/favicon.ico' %}">
+    <meta name="msapplication-TileColor" content="#b91d47">
+    <meta name="msapplication-config" content="{% static 'mordor_server/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="/">Mordor</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar"
+            aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse my-2 my-lg-0" id="navbar">
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a href="/register/" class="btn btn-outline-light my-2 my-sm-0 mr-2"
+                   role="button">Sign up</a>
+            </li>
+            <li class="nav-item" sec:authorize="!isAuthenticated()">
+                <a href="/login/" class="btn btn-outline-success my-2 my-sm-0"
+                   role="button">Login</a>
+            </li>
+            <li class="nav-item" sec:authorize="hasRole('ROLE_ACCESS_ADMIN_PANEL')">
+                <a href="/admin/" class="btn btn-outline-primary my-2 my-sm-0 mr-2"
+                   role="button">Admin</a>
+            </li>
+            <li class="nav-item" sec:authorize="isAuthenticated()">
+                <form class="form-inline" name="logoutForm" th:action="@{/logout/}"
+                      method="post">
+                    <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div role="main" id="content">
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <footer class="footer border-top pt-3 mt-5 mb-3 text-center">
+        <a href="http://ksi.ii.uj.edu.pl" class="text-muted">Koło Studentów Informatyki UJ</a>
+    </footer>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
+</body>

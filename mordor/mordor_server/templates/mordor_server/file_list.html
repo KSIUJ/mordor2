@@ -1,0 +1,8 @@
+{% extends "mordor_server/layout.html" %}
+
+{% block content %}
+{% for file in files %}
+<p><a href="{{ file }}/">{{ file }}</a></p>
+
+{% endfor %}
+{% endblock %}
