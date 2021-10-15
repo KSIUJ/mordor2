@@ -1,6 +1,7 @@
-from django.http import HttpResponse, FileResponse
 import os
+from django.http import HttpResponse, FileResponse
 from shutil import make_archive
+from django.views.decorators.csrf import csrf_exempt
 
 
 DATA_LOCATION = r'/home/skyman/projects/mordor2/data'
@@ -27,3 +28,17 @@ def download_file(request, path):
 
     return FileResponse(open(request_path, 'rb'), as_attachment=True)
 
+@csrf_exempt
+def add_file(request, path):
+    request_path = DATA_LOCATION + '/' + str(path)
+
+    if request.method == 'POST':
+        file = request.FILES['file'].open()
+
+        f = open(request_path + file.name, 'wb')
+        f.write(file.read())
+
+        f.close()
+        return HttpResponse("Done")
+    else:
+        return HttpResponse("Wrong request method!")
