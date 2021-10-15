@@ -1,10 +1,13 @@
 import os
+import markdown
+
 from django.http import HttpResponse, FileResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from shutil import make_archive
+from django.shortcuts import render
 
-DATA_LOCATION = r'/home/skyman/projects/mordor2/data'
+DATA_LOCATION = r'/home/bubuss/mordor2.0/data'
 
 
 # Create your views here.
@@ -21,8 +24,8 @@ def list_directory(request, path=''):
 def download_directory(request, path):
     request_path = os.path.join(DATA_LOCATION, path)
 
-    make_archive(r'/home/skyman/projects/mordor2/mordor2.0/mordor/mordor_server/temp/x', 'zip', request_path)
-    return FileResponse(open(r'/home/skyman/projects/mordor2/mordor2.0/mordor/mordor_server/temp/x.zip', 'rb'),
+    make_archive(r'/home/bubuss/mordor2.0/temp/x', 'zip', request_path)
+    return FileResponse(open(r'/home/bubuss/mordor2.0/temp/x.zip', 'rb'),
                         as_attachment=True)
 
 
@@ -49,3 +52,16 @@ def add_file(request, path):
 
 def homepage(request):
     return render(request, 'mordor_server/home.html')
+
+
+def view_file(request, path):
+    request_path = DATA_LOCATION + '/' + str(path)
+    file_type = path[path.rindex('.')+1:]
+
+    if file_type.lower() == "md":
+        file = open(request_path, 'r')
+        html = markdown.markdown(file.read(), extensions=['fenced_code'])
+        return render(request, 'mordor_server/index.html', {'markdown': html})
+    else:
+        return FileResponse(open(request_path, 'rb'))
+
