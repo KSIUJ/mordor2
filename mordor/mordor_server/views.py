@@ -68,7 +68,7 @@ def handler404(request, exception):
     content = loader.render_to_string('mordor_server/home.html', {}, request)
     return HttpResponseNotFound(content)
 
-def handler405(request, exception):
+def handler500(request):
     content = loader.render_to_string('mordor_server/home.html', {}, request)
     return HttpResponseNotFound(content)
 
