@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.template import loader
 
 from shutil import make_archive
-
+from shutil import rmtree
 
 DATA_LOCATION = r'/home/bubuss/mordor2.0/data'
 
@@ -49,6 +49,18 @@ def add_file(request, path):
         return HttpResponse("Wrong request method!")
 
 
+def remove_directory(request, path):
+    request_path = get_path(path)
+    rmtree(request_path)
+    return HttpResponse("Directory removed", status=200)
+
+
+def remove_file(request, path):
+    request_path = get_path(path)
+    os.remove(request_path)
+    return HttpResponse("File removed", status=200)
+
+
 def view_file(request, path):
     request_path = get_path(path)
     file_type = path[path.rindex('.')+1:]
@@ -60,17 +72,21 @@ def view_file(request, path):
     else:
         return FileResponse(open(request_path, 'rb'))
 
+
 def handler403(request, exception):
     content = loader.render_to_string('mordor_server/home.html', {}, request)
     return HttpResponseNotFound(content)
+
 
 def handler404(request, exception):
     content = loader.render_to_string('mordor_server/home.html', {}, request)
     return HttpResponseNotFound(content)
 
+
 def handler500(request):
     content = loader.render_to_string('mordor_server/home.html', {}, request)
     return HttpResponseNotFound(content)
+
 
 def get_path(path):
     request_path = os.path.join(DATA_LOCATION, path)

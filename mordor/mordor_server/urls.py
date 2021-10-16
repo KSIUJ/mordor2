@@ -8,4 +8,6 @@ urlpatterns = [
     path(r'download/file/<path:path>', views.download_file),
     path(r'add/file/<path:path>', views.add_file),
     path(r'view/<path:path>', views.view_file),
+    path(r'remove/directory/<path:path>', views.remove_directory),
+    path(r'remove/file/<path:path>', views.remove_file)
 ]
