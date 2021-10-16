@@ -73,7 +73,7 @@ def handler500(request):
     return HttpResponseNotFound(content)
 
 def get_path(path):
-    request_path = DATA_LOCATION + '/' + str(path)
+    request_path = os.path.join(DATA_LOCATION, path)
 
     if not os.path.exists(request_path):
         raise Http404()
