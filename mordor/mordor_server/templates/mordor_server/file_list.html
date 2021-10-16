@@ -1,8 +1,24 @@
 {% extends "mordor_server/layout.html" %}
 
 {% block content %}
+
+{% for directory in directories %}
+{% if path %}
+    <p><a href="/list/{{ path }}/{{ directory }}">
+{% else %}
+    <p><a href="/list/{{ directory }}">
+{% endif %}
+    {{ directory }}</a></p>
+{% endfor %}
+
 {% for file in files %}
-<p><a href="/view{{ path }}/{{ file }}">{{ file }}</a></p>
+{% if path %}
+    <p><a href="/view/{{ path }}/{{ file }}">
+{% else %}
+    <p><a href="/view/{{ file }}">
+{% endif %}
+    {{ file }}</a></p>
 
 {% endfor %}
+
 {% endblock %}

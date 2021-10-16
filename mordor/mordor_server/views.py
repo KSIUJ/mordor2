@@ -9,27 +9,33 @@ from django.template import loader
 from shutil import make_archive
 from shutil import rmtree
 
-DATA_LOCATION = r'/home/bubuss/mordor2.0/data'
+DATA_LOCATION = r'/home/skyman/projects/mordor2/data'
+
 
 # Create your views here.
-def render_home(request, path=''):
+def home(request, path=''):
     return render(request, "mordor_server/home.html")
 
+
 def list_directory(request, path=''):
+
     request_path = get_path(path)
     data_in_directory = os.listdir(request_path)
-    
+    files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x))]
+    directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x))]
+
     return render(request, 'mordor_server/file_list.html', {
-        'files': data_in_directory, 
+        'files': files,
+        'directories': directories,
         'path': path
     })
 
 
 def download_directory(request, path):
     request_path = get_path(path)
-    make_archive(r'/home/bubuss/mordor2.0/temp/x', 'zip', request_path)
+    make_archive(r'/home/skyman/projects/mordor2/data/temp/x', 'zip', request_path)
     
-    return FileResponse(open(r'/home/bubuss/mordor2.0/temp/x.zip', 'rb'),
+    return FileResponse(open(r'/home/skyman/projects/mordor2/data/temp/x.zip', 'rb'),
                         as_attachment=True)
 
 
@@ -70,7 +76,6 @@ def remove_file(request, path):
 def view_file(request, path):
     request_path = get_path(path)
     file_type = path[path.rindex('.')+1:]
-    print(file_type)
 
     if file_type.lower() == "md":
         file = open(request_path, 'r')
