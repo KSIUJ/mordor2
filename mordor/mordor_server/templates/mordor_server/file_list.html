@@ -2,7 +2,7 @@
 
 {% block content %}
 {% for file in files %}
-<p><a href="{{ file }}/">{{ file }}</a></p>
+<p><a href="/view{{ path }}/{{ file }}">{{ file }}</a></p>
 
 {% endfor %}
 {% endblock %}

@@ -12,11 +12,17 @@ from shutil import rmtree
 DATA_LOCATION = r'/home/bubuss/mordor2.0/data'
 
 # Create your views here.
+def render_home(request, path=''):
+    return render(request, "mordor_server/home.html")
+
 def list_directory(request, path=''):
     request_path = get_path(path)
     data_in_directory = os.listdir(request_path)
     
-    return HttpResponse(' '.join(data_in_directory))
+    return render(request, 'mordor_server/file_list.html', {
+        'files': data_in_directory, 
+        'path': path
+    })
 
 
 def download_directory(request, path):
@@ -64,6 +70,7 @@ def remove_file(request, path):
 def view_file(request, path):
     request_path = get_path(path)
     file_type = path[path.rindex('.')+1:]
+    print(file_type)
 
     if file_type.lower() == "md":
         file = open(request_path, 'r')
