@@ -5,6 +5,7 @@ from django.http import HttpResponse, FileResponse, Http404, HttpResponseNotFoun
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect, render
 from django.template import loader
+from django.core.exceptions import PermissionDenied
 
 from shutil import make_archive
 from shutil import rmtree
@@ -18,6 +19,8 @@ def home(request, path=''):
 
 
 def list_directory(request, path=''):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
 
     request_path = get_path(path)
     data_in_directory = os.listdir(request_path)
@@ -31,7 +34,11 @@ def list_directory(request, path=''):
     })
 
 
+
 def download_directory(request, path):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
     request_path = get_path(path)
     make_archive(r'/home/skyman/projects/mordor2/data/temp/x', 'zip', request_path)
     
@@ -40,13 +47,19 @@ def download_directory(request, path):
 
 
 def download_file(request, path):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
     request_path = get_path(path)
     
     return FileResponse(open(request_path, 'rb'), as_attachment=True)
 
 
 @csrf_exempt
-def add_file(request, path):  
+def add_file(request, path):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
     request_path = get_path(path)
 
     if request.method == 'POST':
@@ -62,18 +75,27 @@ def add_file(request, path):
 
 
 def remove_directory(request, path):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
     request_path = get_path(path)
     rmtree(request_path)
     return HttpResponse("Directory removed", status=200)
 
 
 def remove_file(request, path):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
     request_path = get_path(path)
     os.remove(request_path)
     return HttpResponse("File removed", status=200)
 
 
 def view_file(request, path):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
     request_path = get_path(path)
     file_type = path[path.rindex('.')+1:]
 
