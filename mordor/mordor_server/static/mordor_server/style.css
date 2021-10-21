@@ -52,3 +52,13 @@ code.hljs {
 .container {
     margin-top: 5%;
 }
+
+.hidden-dir {
+    background-color: red;
+}
+
+.dir_entity {
+    border-top-color: black;
+    border-top-width: 2px;
+    border-style:solid;
+}

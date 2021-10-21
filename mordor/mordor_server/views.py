@@ -4,12 +4,12 @@ from shutil import rmtree
 
 import markdown
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse, FileResponse, Http404, HttpResponseNotFound
+from django.http import HttpResponse, FileResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 
-DATA_LOCATION = r'/home/skyman/projects/mordor2/data'
+from .utils import get_path
 
 
 # Create your views here.
@@ -123,18 +123,3 @@ def handler404(request, exception):
 def handler500(request):
     content = loader.render_to_string('mordor_server/home.html', {}, request)
     return HttpResponseNotFound(content)
-
-
-def get_path(request, path):
-    if not request.user.is_staff:
-        tokenized = request.get_full_path().split('/')
-        for p in tokenized:
-            if p[0] == '.':
-                raise PermissionDenied
-
-    request_path = os.path.join(DATA_LOCATION, path)
-    if not os.path.exists(request_path):
-        raise Http404()
-
-    return request_path
-
