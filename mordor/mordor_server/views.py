@@ -1,14 +1,13 @@
 import os
-import markdown
-
-from django.http import HttpResponse, FileResponse, Http404, HttpResponseNotFound
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import redirect, render
-from django.template import loader
-from django.core.exceptions import PermissionDenied
-
 from shutil import make_archive
 from shutil import rmtree
+
+import markdown
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse, FileResponse, Http404, HttpResponseNotFound
+from django.shortcuts import render
+from django.template import loader
+from django.views.decorators.csrf import csrf_exempt
 
 DATA_LOCATION = r'/home/skyman/projects/mordor2/data'
 
@@ -22,7 +21,7 @@ def list_directory(request, path=''):
     if not request.user.is_authenticated:
         raise PermissionDenied
 
-    request_path = get_path(path)
+    request_path = get_path(request, path)
     data_in_directory = os.listdir(request_path)
     files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x))]
     directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x))]
@@ -34,14 +33,13 @@ def list_directory(request, path=''):
     })
 
 
-
 def download_directory(request, path):
     if not request.user.is_authenticated:
         raise PermissionDenied
 
-    request_path = get_path(path)
+    request_path = get_path(request, path)
     make_archive(r'/home/skyman/projects/mordor2/data/temp/x', 'zip', request_path)
-    
+
     return FileResponse(open(r'/home/skyman/projects/mordor2/data/temp/x.zip', 'rb'),
                         as_attachment=True)
 
@@ -50,8 +48,8 @@ def download_file(request, path):
     if not request.user.is_authenticated:
         raise PermissionDenied
 
-    request_path = get_path(path)
-    
+    request_path = get_path(request, path)
+
     return FileResponse(open(request_path, 'rb'), as_attachment=True)
 
 
@@ -60,7 +58,7 @@ def add_file(request, path):
     if not request.user.is_staff:
         raise PermissionDenied
 
-    request_path = get_path(path)
+    request_path = get_path(request, path)
 
     if request.method == 'POST':
         file = request.FILES['file'].open()
@@ -78,7 +76,7 @@ def remove_directory(request, path):
     if not request.user.is_staff:
         raise PermissionDenied
 
-    request_path = get_path(path)
+    request_path = get_path(request, path)
     rmtree(request_path)
     return HttpResponse("Directory removed", status=200)
 
@@ -87,7 +85,7 @@ def remove_file(request, path):
     if not request.user.is_staff:
         raise PermissionDenied
 
-    request_path = get_path(path)
+    request_path = get_path(request, path)
     os.remove(request_path)
     return HttpResponse("File removed", status=200)
 
@@ -96,8 +94,8 @@ def view_file(request, path):
     if not request.user.is_authenticated:
         raise PermissionDenied
 
-    request_path = get_path(path)
-    file_type = path[path.rindex('.')+1:]
+    request_path = get_path(request, path)
+    file_type = path[path.rindex('.') + 1:]
 
     if file_type.lower() == "md":
         file = open(request_path, 'r')
@@ -122,9 +120,14 @@ def handler500(request):
     return HttpResponseNotFound(content)
 
 
-def get_path(path):
-    request_path = os.path.join(DATA_LOCATION, path)
+def get_path(request, path):
+    if not request.user.is_staff:
+        tokenized = request.get_full_path().split('/')
+        for p in tokenized:
+            if p[0] == '.':
+                raise PermissionDenied
 
+    request_path = os.path.join(DATA_LOCATION, path)
     if not os.path.exists(request_path):
         raise Http404()
 
