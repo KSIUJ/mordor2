@@ -23,12 +23,15 @@ def list_directory(request, path=''):
 
     request_path = get_path(request, path)
     data_in_directory = os.listdir(request_path)
-    hidden = [x for x in data_in_directory if x[0] == '.']
-    files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x))]
-    directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x))]
+
+    hidden_files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x)) and x[0] == '.']
+    hidden_directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x)) and x[0] == '.']
+    files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x)) and x not in hidden_files]
+    directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x)) and x not in hidden_directories]
 
     return render(request, 'mordor_server/file_list.html', {
-        'hidden': hidden,
+        'hidden_files': hidden_files,
+        'hidden_directories': hidden_directories,
         'files': files,
         'directories': directories,
         'path': path
@@ -134,3 +137,4 @@ def get_path(request, path):
         raise Http404()
 
     return request_path
+

@@ -2,6 +2,24 @@
 
 {% block content %}
 
+{% for file in hidden_directories %}
+{% if path and user.is_staff %}
+    <p><a href="/list/{{ path }}/{{ directory }}">
+{% else %}
+    <p><a href="/list/{{ directory }}">
+{% endif %}
+    {{ directory }}</a></p>
+{% endfor %}
+
+{% for file in hidden_files %}
+{% if path and user.is_staff %}
+    <p><a href="/view/{{ path }}/{{ file }}">
+{% else %}
+    <p><a href="/view/{{ file }}">
+{% endif %}
+    {{ file }}</a></p>
+{% endfor %}
+
 {% for directory in directories %}
 {% if path %}
     <p><a href="/list/{{ path }}/{{ directory }}">
@@ -18,7 +36,6 @@
     <p><a href="/view/{{ file }}">
 {% endif %}
     {{ file }}</a></p>
-
 {% endfor %}
 
 {% endblock %}
