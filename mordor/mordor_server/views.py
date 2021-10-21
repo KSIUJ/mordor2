@@ -23,10 +23,12 @@ def list_directory(request, path=''):
 
     request_path = get_path(request, path)
     data_in_directory = os.listdir(request_path)
+    hidden = [x for x in data_in_directory if x[0] == '.']
     files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x))]
     directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x))]
 
     return render(request, 'mordor_server/file_list.html', {
+        'hidden': hidden,
         'files': files,
         'directories': directories,
         'path': path
