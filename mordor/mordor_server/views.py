@@ -18,7 +18,7 @@ from .utils import get_path
 def home(request, path=''):
     return render(request, "mordor_server/home.html")
 
-@csrf_exempt
+
 def list_directory(request, path=''):
     if not request.user.is_authenticated and not settings.DEBUG:
         raise PermissionDenied
@@ -45,7 +45,6 @@ def download_directory(request, path):
         raise PermissionDenied
 
     request_path = get_path(request, path)
-    print(request_path)
     make_archive(settings.MEDIA_ROOT.joinpath(request_path.name), 'zip', request_path)
 
     return FileResponse(open(settings.MEDIA_ROOT.joinpath(request_path.name+".zip"), 'rb'),
