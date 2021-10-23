@@ -20,7 +20,7 @@ def home(request, path=''):
 
 
 def list_directory(request, path=''):
-    if not request.user.is_authenticated and not settings.DEBUG:
+    if not request.user.is_authenticated:
         raise PermissionDenied
 
     request_path = get_path(request, path)
@@ -29,7 +29,7 @@ def list_directory(request, path=''):
     hidden_files = [f.name for f in directory if f.is_file() and f.name[0] == '.']
     hidden_directories = [f.name for f in directory if f.is_dir() and f.name[0] == '.']
     files = [f.name for f in directory if f.is_file() and f.name not in hidden_files]
-    directories = [f.name for f in directory if f.is_dir() and f.name not in hidden_directories]    
+    directories = [f.name for f in directory if f.is_dir() and f.name not in hidden_directories]
 
     return render(request, 'mordor_server/file_list.html', {
         'hidden_files': hidden_files,
@@ -41,7 +41,7 @@ def list_directory(request, path=''):
 
 
 def download_directory(request, path):
-    if not request.user.is_authenticated and not settings.DEBUG:
+    if not request.user.is_authenticated:
         raise PermissionDenied
 
     request_path = get_path(request, path)
@@ -52,7 +52,7 @@ def download_directory(request, path):
 
 
 def download_file(request, path):
-    if not request.user.is_authenticated and not settings.DEBUG:
+    if not request.user.is_authenticated:
         raise PermissionDenied
 
     request_path = get_path(request, path)
@@ -62,7 +62,7 @@ def download_file(request, path):
 
 @csrf_exempt
 def add_file(request, path):
-    if not request.user.is_staff and not settings.DEBUG:
+    if not request.user.is_staff:
         raise PermissionDenied
 
     request_path = get_path(request, path)
@@ -80,7 +80,7 @@ def add_file(request, path):
 
 
 def remove_directory(request, path):
-    if not request.user.is_staff and not settings.DEBUG:
+    if not request.user.is_staff:
         raise PermissionDenied
 
     request_path = get_path(request, path)
@@ -89,7 +89,7 @@ def remove_directory(request, path):
 
 
 def remove_file(request, path):
-    if not request.user.is_staff and not settings.DEBUG:
+    if not request.user.is_staff:
         raise PermissionDenied
 
     request_path = get_path(request, path)
@@ -99,7 +99,7 @@ def remove_file(request, path):
 
 
 def view_file(request, path):
-    if not request.user.is_authenticated and not settings.DEBUG:
+    if not request.user.is_authenticated:
         raise PermissionDenied
 
     request_path = get_path(request, path)
