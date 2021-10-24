@@ -1,13 +1,15 @@
-import os
+import markdown
+
+from pathlib import Path
 from shutil import make_archive
 from shutil import rmtree
 
-import markdown
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, FileResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 
 from .utils import get_path
 
@@ -22,12 +24,12 @@ def list_directory(request, path=''):
         raise PermissionDenied
 
     request_path = get_path(request, path)
-    data_in_directory = os.listdir(request_path)
+    directory = [f for f in request_path.iterdir()]
 
-    hidden_files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x)) and x[0] == '.']
-    hidden_directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x)) and x[0] == '.']
-    files = [x for x in data_in_directory if os.path.isfile(os.path.join(request_path, x)) and x not in hidden_files]
-    directories = [x for x in data_in_directory if os.path.isdir(os.path.join(request_path, x)) and x not in hidden_directories]
+    hidden_files = [f.name for f in directory if f.is_file() and f.name[0] == '.']
+    hidden_directories = [f.name for f in directory if f.is_dir() and f.name[0] == '.']
+    files = [f.name for f in directory if f.is_file() and f.name not in hidden_files]
+    directories = [f.name for f in directory if f.is_dir() and f.name not in hidden_directories]
 
     return render(request, 'mordor_server/file_list.html', {
         'hidden_files': hidden_files,
@@ -43,9 +45,9 @@ def download_directory(request, path):
         raise PermissionDenied
 
     request_path = get_path(request, path)
-    make_archive(r'/home/skyman/projects/mordor2/data/temp/x', 'zip', request_path)
+    make_archive(settings.MEDIA_ROOT.joinpath(request_path.name), 'zip', request_path)
 
-    return FileResponse(open(r'/home/skyman/projects/mordor2/data/temp/x.zip', 'rb'),
+    return FileResponse(open(settings.MEDIA_ROOT.joinpath(request_path.name+".zip"), 'rb'),
                         as_attachment=True)
 
 
@@ -68,10 +70,10 @@ def add_file(request, path):
     if request.method == 'POST':
         file = request.FILES['file'].open()
 
-        f = open(request_path + file.name, 'wb')
-        f.write(file.read())
+        request_path = request_path.joinpath(file.name)
+        with request_path.open(mode='wb') as f:
+            f.write(file.read())
 
-        f.close()
         return HttpResponse("Done")
     else:
         return HttpResponse("Wrong request method!")
@@ -91,7 +93,8 @@ def remove_file(request, path):
         raise PermissionDenied
 
     request_path = get_path(request, path)
-    os.remove(request_path)
+    request_path.unlink(missing_ok=True)
+
     return HttpResponse("File removed", status=200)
 
 
