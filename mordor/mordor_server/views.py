@@ -1,3 +1,4 @@
+from django.http.response import JsonResponse
 import markdown
 
 from pathlib import Path
@@ -18,10 +19,10 @@ from .utils import get_path
 def home(request, path=''):
     return render(request, "mordor_server/home.html")
 
-
+@csrf_exempt
 def list_directory(request, path=''):
-    if not request.user.is_authenticated:
-        raise PermissionDenied
+    #if not request.user.is_authenticated:
+        #raise PermissionDenied
 
     request_path = get_path(request, path)
     directory = [f for f in request_path.iterdir()]
@@ -31,7 +32,7 @@ def list_directory(request, path=''):
     files = [f.name for f in directory if f.is_file() and f.name not in hidden_files]
     directories = [f.name for f in directory if f.is_dir() and f.name not in hidden_directories]
 
-    return render(request, 'mordor_server/file_list.html', {
+    return JsonResponse({
         'hidden_files': hidden_files,
         'hidden_directories': hidden_directories,
         'files': files,
