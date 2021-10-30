@@ -25,6 +25,8 @@ def list_directory(request, path=''):
         #raise PermissionDenied
 
     request_path = get_path(request, path)
+    print("request_path: " + str(request_path))
+    print("path: " + str(path))
     directory = [f for f in request_path.iterdir()]
 
     hidden_files = [f.name for f in directory if f.is_file() and f.name[0] == '.']
@@ -37,7 +39,7 @@ def list_directory(request, path=''):
         'hidden_directories': hidden_directories,
         'files': files,
         'directories': directories,
-        'path': path
+        'path': path if path == '' else path + "/"
     })
 
 
