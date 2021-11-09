@@ -20,8 +20,8 @@ def home(request, path=''):
 
 
 def list_directory(request, path=''):
-    if not request.user.is_authenticated:
-        raise PermissionDenied
+    #if not request.user.is_authenticated:
+        #raise PermissionDenied
 
     request_path = get_path(request, path)
     directory = [f for f in request_path.iterdir()]

@@ -12,7 +12,7 @@ def get_path(request, path):
 
     # change path from absolute to relative path
     if path and path[0] == '/':
-        path = path[1:]
+        path = ''
 
     request_path = settings.MEDIA_ROOT.joinpath(path)
 
