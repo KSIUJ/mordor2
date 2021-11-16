@@ -20,8 +20,8 @@ def home(request, path=''):
 
 
 def list_directory(request, path=''):
-    #if not request.user.is_authenticated:
-        #raise PermissionDenied
+    if not request.user.is_authenticated:
+        raise PermissionDenied
 
     request_path = get_path(request, path)
     directory = [f for f in request_path.iterdir()]
@@ -79,6 +79,7 @@ def add_file(request, path):
         return HttpResponse("Wrong request method!")
 
 
+'''
 def remove_directory(request, path):
     if not request.user.is_staff:
         raise PermissionDenied
@@ -96,7 +97,7 @@ def remove_file(request, path):
     request_path.unlink(missing_ok=True)
 
     return HttpResponse("File removed", status=200)
-
+'''
 
 def view_file(request, path):
     if not request.user.is_authenticated:
